@@ -24,6 +24,7 @@
     "sass-loader": "^12.6.0"
   },
   "dependencies": {
+    "gulp": "^5.0.1",
     "jquery": "^3.7.0"
   }
 }
