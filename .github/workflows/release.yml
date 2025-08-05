@@ -17,31 +17,29 @@ jobs:
 
       # ---------- Install & build assets ----------
       - name: Install Node dependencies
-        working-directory: barebones
         run: npm ci
 
       - name: Compile assets for production
-        working-directory: barebones
         run: npx mix --production
 
       # ---------- Package theme ----------
       - name: Create theme archive
         run: |
-          zip -r "barebones-${{ github.ref_name }}.zip" barebones \
-            -x "**/.git*" "**/node_modules/**" "**/tests/**"
+          zip -r "starter-kit-${{ github.ref_name }}.zip" . \
+            -x ".git*/*" "node_modules/*" ".github/*" "tests/*"
 
       # ---------- Upload release asset ----------
       - name: Upload theme archive to release
         uses: softprops/action-gh-release@v2
         with:
-          files: "barebones-${{ github.ref_name }}.zip"
+          files: "starter-kit-${{ github.ref_name }}.zip"
 
       # ---------- Bump style.css version header ----------
       - name: Update style.css Version header
         run: |
           VERSION=${{ github.ref_name }}
           VERSION=${VERSION#v} # strip leading v
-          sed -i "s/^Version: .*/Version: ${VERSION}/" barebones/style.css
+          sed -i "s/^Version: .*/Version: ${VERSION}/" style.css
           git config user.name "github-actions"
           git config user.email "github-actions@github.com"
           git add barebones/style.css
