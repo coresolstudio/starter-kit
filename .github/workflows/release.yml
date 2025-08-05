@@ -1,0 +1,49 @@
+name: Build Theme Release
+
+on:
+  push:
+    tags:
+      - 'v*'  # Trigger only when a version tag (e.g. v1.3.0) is pushed
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Fetch all history so we can access tags
+
+      # ---------- Install & build assets ----------
+      - name: Install Node dependencies
+        working-directory: barebones
+        run: npm ci
+
+      - name: Compile assets for production
+        working-directory: barebones
+        run: npx mix --production
+
+      # ---------- Package theme ----------
+      - name: Create theme archive
+        run: |
+          zip -r "barebones-${{ github.ref_name }}.zip" barebones \
+            -x "**/.git*" "**/node_modules/**" "**/tests/**"
+
+      # ---------- Upload release asset ----------
+      - name: Upload theme archive to release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: "barebones-${{ github.ref_name }}.zip"
+
+      # ---------- Bump style.css version header ----------
+      - name: Update style.css Version header
+        run: |
+          VERSION=${{ github.ref_name }}
+          VERSION=${VERSION#v} # strip leading v
+          sed -i "s/^Version: .*/Version: ${VERSION}/" barebones/style.css
+          git config user.name "github-actions"
+          git config user.email "github-actions@github.com"
+          git add barebones/style.css
+          git commit -m "chore: bump theme version to ${VERSION} [skip ci]"
+          git push origin HEAD:production 

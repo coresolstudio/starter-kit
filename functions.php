@@ -325,3 +325,39 @@ function front_page_on_pages_menu() {
 }
 
 add_action( 'admin_menu' , 'front_page_on_pages_menu' );
+
+/**
+ * Get the current Git tag (e.g. v1.3.0) or short commit hash of the deployed theme.
+ * If the theme is not inside a Git repository (e.g. production ZIP), it falls back
+ * to the Version header from style.css.
+ *
+ * @return string Version identifier.
+ */
+function barebones_get_git_version() {
+    $theme_dir = get_stylesheet_directory();
+    $git_dir   = $theme_dir . '/.git';
+
+    // If .git directory is missing, we're probably on a packaged release.
+    if ( ! is_dir( $git_dir ) ) {
+        return wp_get_theme()->get( 'Version' );
+    }
+
+    // Read HEAD: either a commit hash or a ref pointer.
+    $head_file = $git_dir . '/HEAD';
+    if ( ! file_exists( $head_file ) ) {
+        return wp_get_theme()->get( 'Version' );
+    }
+
+    $head = trim( file_get_contents( $head_file ) );
+
+    // HEAD points to a ref like "ref: refs/heads/production" – resolve it.
+    if ( strpos( $head, 'ref:' ) === 0 ) {
+        $ref_path = $git_dir . '/' . trim( substr( $head, 5 ) );
+        if ( file_exists( $ref_path ) ) {
+            $head = trim( file_get_contents( $ref_path ) );
+        }
+    }
+
+    // Return short SHA (first 7 chars) if nothing else.
+    return substr( $head, 0, 7 );
+}
