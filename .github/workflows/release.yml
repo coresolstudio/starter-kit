@@ -1,5 +1,9 @@
 name: Build Theme Release
 
+permissions:
+  contents: write
+  workflows: write
+
 on:
   push:
     tags:
