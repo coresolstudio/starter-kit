@@ -15,12 +15,12 @@ if ( ! defined( 'ABSPATH' ) ) {
 // --- Configuration ---------------------------------------------------------
 // Define the remote admin API root. Example: 'https://yc.com/api'.
 if ( ! defined( 'YC_ADMIN_API_URL' ) ) {
-    define( 'YC_ADMIN_API_URL', 'https://yc.com/api' ); // TODO: change to production URL.
+    define( 'YC_ADMIN_API_URL', 'https://v0-admin.coresolstudio.dev/api' );
 }
 
 // GitHub repo in the format 'vendor/repository'. Ensure the repo is public or an auth token is provided.
 if ( ! defined( 'BAREBONES_GITHUB_REPO' ) ) {
-    define( 'BAREBONES_GITHUB_REPO', 'vendor/barebones-theme' ); // TODO: change to actual repo slug.
+    define( 'BAREBONES_GITHUB_REPO', 'coresolstudio/starter-kit' ); // TODO: change to actual repo slug.
 }
 
 // Optional GitHub auth token to increase rate limits. Leave empty for public repos.

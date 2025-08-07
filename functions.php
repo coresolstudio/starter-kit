@@ -361,3 +361,32 @@ function barebones_get_git_version() {
     // Return short SHA (first 7 chars) if nothing else.
     return substr( $head, 0, 7 );
 }
+
+/**
+ * Register REST route to expose theme version.
+ */
+add_action( 'rest_api_init', function () {
+    register_rest_route( 'barebones/v1', '/version', [
+        'methods'  => 'GET',
+        'permission_callback' => '__return_true', // Public endpoint
+        'callback' => function () {
+            return [
+                'style_css_version' => wp_get_theme()->get( 'Version' ),
+                'git_version'       => barebones_get_git_version(),
+            ];
+        },
+    ] );
+} );
+
+/**
+ * Allow CORS for the admin panel domain so it can fetch the version endpoint.
+ */
+add_action( 'rest_api_init', function() {
+    remove_filter( 'rest_pre_serve_request', 'rest_send_cors_headers' );
+    add_filter( 'rest_pre_serve_request', function( $served, $result ) {
+        header( 'Access-Control-Allow-Origin: https://v0-admin.coresolstudio.dev' );
+        header( 'Access-Control-Allow-Methods: GET' );
+        header( 'Access-Control-Allow-Credentials: true' );
+        return $served;
+    }, 15, 2 );
+}, 15 );

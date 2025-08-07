@@ -42,6 +42,6 @@ jobs:
           sed -i "s/^Version: .*/Version: ${VERSION}/" style.css
           git config user.name "github-actions"
           git config user.email "github-actions@github.com"
-          git add barebones/style.css
+          git add style.css
           git commit -m "chore: bump theme version to ${VERSION} [skip ci]"
           git push origin HEAD:production 
